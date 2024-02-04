@@ -110,14 +110,74 @@ public class Model extends Observable {
         boolean changed;
         changed = false;
 
+        //board.setViewingPerspective(Side.NORTH);
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        //  board.setViewingPerspective(side);
+
+        board.setViewingPerspective(side);
+        int size = board.size();
+
+        board.setViewingPerspective(side);
+
+        for (int c = 0; c < size; c++) {
+            for (int r = size - 1; r >= 0; r--) {
+                Tile t = board.tile(c, r);
+                int r1;
+
+                // if first row is not null
+                if (t != null) {
+                    //check the second to last row to see can be merged
+                    for (r1 = r - 1; r1 >= 0; r1--) {
+                        // initialize t1
+                        Tile t1 = board.tile(c, r1);
+
+                        if (t1 != null) {
+                            // both tile are not null, check value
+                            if (t1.value() == t.value()) {
+                                board.move(c, r, t1);
+                                changed = true;
+                                score += 2 * t.value();
+
+                                //ensure not merge the same tile again
+                                r = r1;
+                                break;
+                            }
+                            // if the value not equal, can not be merged,
+                            // end this loop to next first_row
+                            else break;
+                        }
+                    }
+                }
+            }
+        }
+            for (int c = 0; c < size; c++) {
+                for (int r = size - 1; r >= 0; r--) {
+                    Tile t = board.tile(c, r);
+                    int r1;
+
+                    if (t == null) {
+                        //check the second to last row
+                        for (r1 = r - 1; r1 >= 0; r1--) {
+                            // initialize t1
+                            Tile t1 = board.tile(c, r1);
+                            if (t1 != null) {
+                                board.move(c, r, t1);
+                                changed = true;
+                                break;
+                            } else continue;
+                        }
+                    }
+                }
+            }
+        board.setViewingPerspective(Side.NORTH);
 
         checkGameOver();
         if (changed) {
             setChanged();
         }
+        setChanged();
         return changed;
     }
 
@@ -138,6 +198,14 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        int size = b.size();
+        for (int i = 0; i < size; i++){
+            for (int j = 0; j < size; j ++){
+                if (b.tile(i,j) == null) {
+                    return  true;
+                }
+            }
+        }
         return false;
     }
 
@@ -148,6 +216,17 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        int size = b.size();
+        for (int i = 0; i < size; i++){
+            for (int j = 0; j < size; j++){
+                Tile t = b.tile(i,j);
+                if (t != null) {
+                    if (t.value() == MAX_PIECE) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
@@ -159,6 +238,38 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+
+        int size = b.size();
+        int[][] newlist = new int[size][size];
+
+        for (int i = 0; i < size; i++){
+            for (int j = 0; j < size; j++){
+                Tile t = b.tile(i,j);
+                if ( t == null) {
+                    return true;
+                }
+                else {
+                    newlist[i][j] = t.value();
+                }
+            }
+        }
+
+        for (int i = 0; i < size; i++){
+            for (int j = 0; j < size; j++){
+                if (i+1 < size) {
+                    if (newlist[i][j] == newlist[i + 1][j]) return true;
+                }
+                if (i > 0){
+                    if (newlist[i][j] == newlist[i -1][j]) return true;
+                }
+                if (j+1 < size){
+                    if (newlist[i][j] == newlist[i][j+1]) return true;
+                }
+                if (j > 0){
+                    if (newlist[i][j] == newlist[i][j-1]) return true;
+                }
+            }
+        }
         return false;
     }
 

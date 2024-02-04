@@ -18,9 +18,9 @@ public class Main {
      *  (random seed); --log (record moves and random tiles
      *  selected.). */
     public static void main(String... args) {
-        CommandArgs options =
-            new CommandArgs("--seed=(\\d+) --log=(.+)",
-                            args);
+        CommandArgs options;
+        options = new CommandArgs("--seed=(\\d+) --log=(.+)",
+                        args);
         if (!options.ok()) {
             System.err.println("Usage: java game2048.Main [ --seed=NUM ] "
                                + "[ --log=LOG_FILE ]");
